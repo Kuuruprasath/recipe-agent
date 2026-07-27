@@ -38,7 +38,7 @@ export default function Home() {
 
       const data = await response.json();
       if (response.ok) {
-        setStatusMessage(`Success! File saved as: ${data.filename}`);
+        setStatusMessage(`Success! File saved as: ${data.objects.map((obj: { name: any; }) => obj.name).join(', ')}`);
         await new Promise((resolve) => setTimeout(resolve, 3000));
         setStatusMessage('');
         setFile(null); 
@@ -110,7 +110,7 @@ export default function Home() {
           )}
         </div>
         
-        
+
       </main>
     </div>
   );
