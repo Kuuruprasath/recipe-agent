@@ -1,12 +1,15 @@
 'use client'; // Required for using form state and file selection
 import { useState, ChangeEvent, FormEvent, useRef} from 'react';
-
+import { useRouter } from "next/navigation";
+interface Ingredient {name: string; confidence: number; category: string;}
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const router = useRouter();
 
   // Handle file selection from the input field
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,11 +40,14 @@ export default function Home() {
       });
 
       const data = await response.json();
+      
       if (response.ok) {
-        setStatusMessage(`Success! File saved as: ${data.objects.map((obj: { name: any; }) => obj.name).join(', ')}`);
+        setIngredients(data['ingredients']);
+        setStatusMessage(`Success! File saved as`);
         await new Promise((resolve) => setTimeout(resolve, 3000));
         setStatusMessage('');
         setFile(null); 
+        router.push("/ingredient");
         if (fileInputRef.current) {
           fileInputRef.current.value = ""; 
         }
@@ -50,7 +56,7 @@ export default function Home() {
         setStatusMessage(`Upload failed: ${data.detail || 'Unknown error'}`);
       }
     } catch (error) {
-      setStatusMessage('Network error. Check if your FastAPI server is running.');
+      setStatusMessage(String(error));
     } finally {
       setIsUploading(false);
     } 
@@ -109,8 +115,6 @@ export default function Home() {
             </p>
           )}
         </div>
-        
-
       </main>
     </div>
   );
