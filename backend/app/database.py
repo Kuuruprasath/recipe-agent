@@ -56,3 +56,52 @@ def saveDatabase(fname, path, ingredients):
 
     finally:
         db.close()
+
+def getIngredient(image_id):
+    
+    db = SessionLocal()
+    try:
+        ingredients = (
+            db.query(Ingredient)
+            .filter(Ingredient.image_id == image_id)
+            .all()
+        )
+
+        return ingredients
+    except Exception:
+            db.rollback()
+            raise
+    
+    finally:
+        db.close()
+
+
+def updateIngredient(image_id,ingredients):
+    
+    db = SessionLocal()
+    try:
+        
+        db.query(Ingredient).filter(
+            Ingredient.image_id == image_id
+        ).delete()
+    
+        db.commit()
+    
+        for ingredient in ingredients:
+    
+            db.add(
+                Ingredient(
+                    image_id=image_id,
+                    name=ingredient.name,
+                    confidence=ingredient.confidence,
+                    category=ingredient.category,
+                )
+            )
+    
+        db.commit()
+    except Exception:
+            db.rollback()
+            raise
+    
+    finally:
+        db.close()

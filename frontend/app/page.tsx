@@ -39,21 +39,21 @@ export default function Home() {
         body: formData,
       });
 
-      const data = await response.json();
+      const image_id = await response.json();
       
       if (response.ok) {
-        setIngredients(data['ingredients']);
-        setStatusMessage(`Success! File saved as`);
+        // setIngredients(data['ingredients']);
+        setStatusMessage(`Success! File saved`);
         await new Promise((resolve) => setTimeout(resolve, 3000));
         setStatusMessage('');
         setFile(null); 
-        router.push("/ingredient");
+        router.push(`/ingredients/${image_id}`);
         if (fileInputRef.current) {
           fileInputRef.current.value = ""; 
         }
         
       } else {
-        setStatusMessage(`Upload failed: ${data.detail || 'Unknown error'}`);
+        setStatusMessage(`Upload failed: ${image_id.detail || 'Unknown error'}`);
       }
     } catch (error) {
       setStatusMessage(String(error));
